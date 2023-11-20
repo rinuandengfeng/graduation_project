@@ -7,8 +7,5 @@ ua = UserAgent()
 
 # headers配置
 
-
-print(headers)
-
 # 代理池配置
 proxies = []
