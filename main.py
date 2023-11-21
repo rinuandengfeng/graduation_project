@@ -1,4 +1,4 @@
-from utils.test import get_book_info
+from utils.get_book_info import get_book_info
 
 # 获取图书畅销榜中的
 book_info_list = []
