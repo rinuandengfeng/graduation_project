@@ -1,4 +1,3 @@
-
 import logging
 import logging.handlers
 from time import strftime
@@ -15,7 +14,8 @@ LOG_INFOFILENAME = strftime('logs\\all_%Y_%m_%d.log')
 
 # 处理函数
 def set_logger():
-    path = os.path.dirname(os.getcwd()+'\\logs\\')
+    path = os.path.dirname(basePath + '\\logs\\')
+
     if not os.path.exists(path):
         # 创建目录
         os.makedirs(path)
@@ -32,6 +32,14 @@ def set_logger():
     file_handler.setFormatter(time_formatter)
     # 记录器增加处理器
     logger.addHandler(file_handler)
+
+    # 终端处理器对象
+    ter_handler = logging.StreamHandler()
+    ter_formatter = logging.Formatter(
+        '%(asctime)s %(levelname)s  %(message)s')
+
+    # 记录器增加处理器
+    logger.addHandler(ter_handler)
 
     # # 将日志文件写入磁盘记录错误
     # error_handler = logging.FileHandler(LOG_ERRORFILENAME)
