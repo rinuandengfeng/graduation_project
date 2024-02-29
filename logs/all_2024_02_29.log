@@ -1,0 +1,1 @@
+2024-02-29 17:31:29,521 WARNING  There was an error managing chromedriver (error sending request for url (https://storage.googleapis.com/chrome-for-testing-public/122.0.6261.94/win64/chromedriver-win64.zip): error trying to connect: 远程主机强迫关闭了一个现有的连接。 (os error 10054)); using driver found in the cache
