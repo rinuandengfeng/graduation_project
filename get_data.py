@@ -1,6 +1,5 @@
-import json
 import os
-import re
+import sys
 import time
 
 from selenium.webdriver import Chrome, ChromeOptions
@@ -9,7 +8,7 @@ from selenium.webdriver.common.by import By
 import csv
 from subprocess import Popen
 from utils.log import logger
-
+from utils.proxy_pool import ProxyPool
 
 # 命令开启远程调用
 Popen(r"C:\Program Files\Google\Chrome\Application\chrome --remote-debugging-port=9876")
@@ -29,6 +28,8 @@ time.sleep(5)
 
 
 # 获取目录下的文件名
+
+
 def get_files_in_directory(directory_path):
     return os.listdir(directory_path)
 
@@ -41,7 +42,14 @@ def read_csv(file_path):
             if row[0] == "排名":
                 continue
             time.sleep(3)
-            analysis_book_info(row[1], file_path, row[0])
+            try:
+                analysis_book_info(row[1], file_path, row[0])
+            except Exception as e:
+                logger.error(e)
+                logger.info("解析数据失败，需要进行登录验证...")
+                time.sleep(3)
+                browser.close()
+                sys.exit(-1)
     time.sleep(3)
     logger.info("读取" + file_path + "文件中的数据结束...")
 
@@ -84,6 +92,8 @@ def analysis_book_info(url, csv_name, list_num):
     # 书名
     book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
     book_info_list.append(book_name.get_attribute("title"))
+    logger.info("解析数据失败，需要进行登录验证...")
+
     # 作者
     author = browser.find_element(By.XPATH, '//*[@id="author"]')
     author = author.text.replace("作者:", "")
