@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import time
 
@@ -8,6 +9,7 @@ from selenium.webdriver.common.by import By
 import csv
 from subprocess import Popen
 from utils.log import logger
+
 
 # 命令开启远程调用
 Popen(r"C:\Program Files\Google\Chrome\Application\chrome --remote-debugging-port=9876")
@@ -26,18 +28,26 @@ browser.get("https://www.dangdang.com/")
 time.sleep(5)
 
 
+# 获取目录下的文件名
+def get_files_in_directory(directory_path):
+    return os.listdir(directory_path)
+
+
 def read_csv(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
+        logger.info("读取" + file_path + "文件中的数据...")
         reader = csv.reader(file)
         for row in reader:
             if row[0] == "排名":
                 continue
-            analysis_book_info(row[1], file_path, "2023", row[0])
+            time.sleep(3)
+            analysis_book_info(row[1], file_path, row[0])
     time.sleep(3)
+    logger.info("读取" + file_path + "文件中的数据结束...")
 
 
 # 获取2023 年所有月份的图书信息
-def analysis_book_info(url, csv_name, year, list_num):
+def analysis_book_info(url, csv_name, list_num):
     """
     获取图书信息并解析，写入到文件中
     :param url:  图书的地址
@@ -53,8 +63,10 @@ def analysis_book_info(url, csv_name, year, list_num):
     head_info = (
         "排名, 书名, 作者, 翻译者, 封面, 出版社时间, 出版社, 现价, 定价,折扣, 大类型, 子类型, 开本, 纸张, 包装, 是否套装,ISBN , 编辑推荐 ,评论数量 , 评论标签")
 
-    csv_name = csv_name.replace("_src", "")
-    filename = "./data/" + year + "/" + csv_name
+    # 处理文件名
+
+    filename = csv_name.replace("_src", "")
+    year = csv_name.split("/")[2]
     try:
         with open(filename, "r", encoding="utf-8", newline="") as f:
             logger.info("文件" + filename + "已经存在，不需要创建文件")
@@ -114,9 +126,11 @@ def analysis_book_info(url, csv_name, year, list_num):
         discount = "None"
     book_info_list.append(discount)
     # 大类型
-    type_list = browser.find_elements(By.XPATH, '//*[@id="detail-category-path"]/span/a[2]')
+
+    type_list = browser.find_elements(By.XPATH, '//*[@id="detail-category-path"]/span[1]/a[2]')
     for i in type_list:
         book_info_list.append(i.text)
+
     # 子类型
     subtype = browser.find_element(By.XPATH, '//*[@id="detail-category-path"]/span/a[3]')
     book_info_list.append(subtype.text)
@@ -142,16 +156,20 @@ def analysis_book_info(url, csv_name, year, list_num):
     book_info_list.append(isbn)
 
     # 编辑推荐
-    editor_recommend = browser.find_element(By.XPATH, '//*[@id="abstract"]/div[2]')
-    book_info_list.append(editor_recommend.text)
+    try:
+        editor_recommend = browser.find_element(By.XPATH, '//*[@id="abstract"]/div[2]')
+        book_info_list.append(editor_recommend.text)
+    except Exception as e:
+        book_info_list.append("None")
 
+    time.sleep(3)
     # 评论数量
     browser.get(url + "?point=comment_point")
     time.sleep(3)
     comment_num = browser.find_element(By.XPATH, '//*[@id="comment_num_tab"]/span[1]')
     comment_num = comment_num.text.replace("全部（", "")
     comment_num = comment_num.replace("）", "")
-    print("评论数量：", comment_num)
+    # print("评论数量：", comment_num)
     book_info_list.append(comment_num)
     # 评论标签
     comment_tag = browser.find_elements(By.XPATH, '//*[@id="comment_tags_div"]/div[2]/span')
@@ -161,7 +179,6 @@ def analysis_book_info(url, csv_name, year, list_num):
         comment_tag_list.append(info)
     book_info_list.append(comment_tag_list)
     logger.info(year + "年" + url + "的图书信息解析完成...")
-
 
     # 写入到csv文件中
     logger.info("开始将" + year + "年的图书信息写入到文件中...")
@@ -216,7 +233,7 @@ def get_num_src(year, month):
 # browser.close()
 if __name__ == "__main__":
     time.sleep(3)
-    analysis_book_info("http://product.dangdang.com/21055821.html", "bests_sellers_0_month_src.csv", "2023", "1")
+    analysis_book_info("http://product.dangdang.com/21055821.html", "bests_sellers_0_month_src.csv", "1")
 
     # for i in range(2020, 2024):
     #     get_num_src(str(i), "0")

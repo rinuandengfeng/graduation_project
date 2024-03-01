@@ -1,9 +1,16 @@
-from get_data import read_csv_lines
-from utils.get_book_info import get_book_info_2022
+from get_data import get_files_in_directory, read_csv,analysis_book_info
+from utils.log import logger
 
-# 获取2023年前十个月份的数据
-# get_book_info_2023()
 
-# get_book_info_2022()
+def start(file_path):
+    filenames = get_files_in_directory(file_path)
+    for filename in filenames:
+        if filename.endswith("_src.csv"):
+            logger.info("开始获取" + filename + "的图书信息数据...")
+            print(file_path + "/" + filename)
+            read_csv(file_path + "/" + filename)
+            logger.info("开始获取" + filename + "的图书信息数据...")
 
-read_csv("./data/")
+
+if __name__ == "__main__":
+    start("./data/2023/new_book")

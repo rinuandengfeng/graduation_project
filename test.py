@@ -17,4 +17,4 @@ print(csv_name)
 def get_files_in_directory(directory_path):
     return os.listdir(directory_path)
 
-get_files_in_directory("./data/2023/")
+
