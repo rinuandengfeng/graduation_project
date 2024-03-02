@@ -7,6 +7,7 @@ from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 import csv
 from subprocess import Popen
+
 from utils.log import logger
 from utils.proxy_pool import ProxyPool
 
@@ -17,8 +18,6 @@ Popen(r"C:\Program Files\Google\Chrome\Application\chrome --remote-debugging-por
 op = ChromeOptions()
 op.add_experimental_option("debuggerAddress", "127.0.0.1:9876")
 # op.add_experimental_option('useAutomationExtension', False)
-
-
 browser = Chrome(options=op)
 
 # 进入当当网首页
@@ -28,8 +27,6 @@ time.sleep(5)
 
 
 # 获取目录下的文件名
-
-
 def get_files_in_directory(directory_path):
     return os.listdir(directory_path)
 
@@ -85,20 +82,32 @@ def analysis_book_info(url, csv_name, list_num):
 
     # 读取csv文件的url
     browser.get(url)
+    time.sleep(7)
+
     # 解析要获取的数据
     # 排行榜
     book_info_list.append(list_num)
     logger.info("开始解析" + year + "年" + url + "的图书信息...")
+    try:
+        book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
+        # book_info_list.append(book_name.get_attribute("title"))
+    except Exception as e:
+        time.sleep(30)
     # 书名
-    book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
-    book_info_list.append(book_name.get_attribute("title"))
-    logger.info("解析数据失败，需要进行登录验证...")
+    try:
+        book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
+        book_info_list.append(book_name.get_attribute("title"))
+    except Exception as e:
+        book_info_list.append("None")
 
     # 作者
-    author = browser.find_element(By.XPATH, '//*[@id="author"]')
-    author = author.text.replace("作者:", "")
-    author = author.split("著")
-    book_info_list.append(author)
+    try:
+        author = browser.find_element(By.XPATH, '//*[@id="author"]')
+        author = author.text.replace("作者:", "")
+        author = author.split("著")
+        book_info_list.append(author)
+    except Exception as e:
+        book_info_list.append("None")
     # 翻译者
     try:
         author = author[1].split("译")
@@ -110,60 +119,107 @@ def analysis_book_info(url, csv_name, list_num):
         book_info_list.append("None")
 
     # 封面图
-    pic = browser.find_element(By.XPATH, '//*[@id="largePic"]')
-    book_info_list.append(pic.get_attribute("src"))
+    try:
+        pic = browser.find_element(By.XPATH, '//*[@id="largePic"]')
+        book_info_list.append(pic.get_attribute("src"))
+    except Exception as e:
+        book_info_list.append("None")
     # 出版社时间
-    publication_time = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[2]/span[3]')
-    publication_time = publication_time.text.replace("出版时间:", "")
-    book_info_list.append(publication_time)
+    try:
+        publication_time = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[2]/span[3]')
+        publication_time = publication_time.text.replace("出版时间:", "")
+        book_info_list.append(publication_time)
+    except Exception as e:
+        book_info_list.append("None")
 
     # 出版社
-    press = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[2]/span[2]/a')
-    book_info_list.append(press.text)
-    # 现价
-    current_price = browser.find_element(By.XPATH, '//*[@id="dd-price"]')
-    current_price = current_price.text.replace("¥", "")
-    book_info_list.append(current_price)
-    # 定价
-    pricing = browser.find_element(By.XPATH, '//*[@id="original-price"]')
-    pricing = pricing.text.replace("¥", "")
-    book_info_list.append(pricing)
-    # 折扣
-    discount = browser.find_element(By.XPATH, '//*[@id="dd-zhe"]')
-    discount = discount.text.replace("折)", "")
-    discount = discount.replace("(", "")
-    if discount == "":
-        discount = "None"
-    book_info_list.append(discount)
-    # 大类型
+    try:
+        press = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[2]/span[2]/a')
+        book_info_list.append(press.text)
+    except Exception as e:
+        book_info_list.append("None")
 
-    type_list = browser.find_elements(By.XPATH, '//*[@id="detail-category-path"]/span[1]/a[2]')
-    for i in type_list:
-        book_info_list.append(i.text)
+    # 现价
+    try:
+        current_price = browser.find_element(By.XPATH, '//*[@id="dd-price"]')
+        current_price = current_price.text.replace("¥", "")
+        book_info_list.append(current_price)
+    except Exception as e:
+        book_info_list.append("None")
+
+    # 定价
+    try:
+        pricing = browser.find_element(By.XPATH, '//*[@id="original-price"]')
+        pricing = pricing.text.replace("¥", "")
+        book_info_list.append(pricing)
+    except Exception as e:
+        book_info_list.append("None")
+
+    # 折扣
+    try:
+        discount = browser.find_element(By.XPATH, '//*[@id="dd-zhe"]')
+        discount = discount.text.replace("折)", "")
+        discount = discount.replace("(", "")
+        if discount == "":
+            discount = "None"
+        book_info_list.append(discount)
+    except Exception as e:
+        book_info_list.append("None")
+
+    # 大类型
+    try:
+        type_list = browser.find_elements(By.XPATH, '//*[@id="detail-category-path"]/span[1]/a[2]')
+        for i in type_list:
+            book_info_list.append(i.text)
+    except Exception as e:
+        book_info_list.append("None")
 
     # 子类型
-    subtype = browser.find_element(By.XPATH, '//*[@id="detail-category-path"]/span/a[3]')
-    book_info_list.append(subtype.text)
+    try:
+        subtype = browser.find_element(By.XPATH, '//*[@id="detail-category-path"]/span/a[3]')
+        book_info_list.append(subtype.text)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 开本
-    book_size = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[1]')
-    book_size = book_size.text.replace("开 本：", "")
-    book_info_list.append(book_size)
+    try:
+        book_size = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[1]')
+        book_size = book_size.text.replace("开 本：", "")
+        book_info_list.append(book_size)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 纸张
-    paper = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[2]')
-    paper = paper.text.replace("纸 张：", "")
-    book_info_list.append(paper)
+    try:
+        paper = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[2]')
+        paper = paper.text.replace("纸 张：", "")
+        book_info_list.append(paper)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 包装
-    packaging = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[3]')
-    packaging = packaging.text.replace("包 装：", "")
-    book_info_list.append(packaging)
+    try:
+        packaging = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[3]')
+        packaging = packaging.text.replace("包 装：", "")
+        book_info_list.append(packaging)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 是否套装
-    suit = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[4]')
-    suit = suit.text.replace("是否套装：", "")
-    book_info_list.append(suit)
+    try:
+        suit = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[4]')
+        suit = suit.text.replace("是否套装：", "")
+        book_info_list.append(suit)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 国际标准书号ISBN
-    isbn = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[5]')
-    isbn = isbn.text.replace("国际标准书号ISBN：", "")
-    book_info_list.append(isbn)
+    try:
+        isbn = browser.find_element(By.XPATH, '//*[@id="detail_describe"]/ul/li[5]')
+        isbn = isbn.text.replace("国际标准书号ISBN：", "")
+        book_info_list.append(isbn)
+    except Exception as e:
+        book_info_list.append("None")
 
     # 编辑推荐
     try:
@@ -176,18 +232,25 @@ def analysis_book_info(url, csv_name, list_num):
     # 评论数量
     browser.get(url + "?point=comment_point")
     time.sleep(3)
-    comment_num = browser.find_element(By.XPATH, '//*[@id="comment_num_tab"]/span[1]')
-    comment_num = comment_num.text.replace("全部（", "")
-    comment_num = comment_num.replace("）", "")
-    # print("评论数量：", comment_num)
-    book_info_list.append(comment_num)
+    try:
+        comment_num = browser.find_element(By.XPATH, '//*[@id="comment_num_tab"]/span[1]')
+        comment_num = comment_num.text.replace("全部（", "")
+        comment_num = comment_num.replace("）", "")
+        # print("评论数量：", comment_num)
+        book_info_list.append(comment_num)
+    except Exception as e:
+        book_info_list.append("None")
+
     # 评论标签
-    comment_tag = browser.find_elements(By.XPATH, '//*[@id="comment_tags_div"]/div[2]/span')
-    comment_tag_list = []
-    for i in comment_tag:
-        info = i.find_element(By.XPATH, 'a').text
-        comment_tag_list.append(info)
-    book_info_list.append(comment_tag_list)
+    try:
+        comment_tag = browser.find_elements(By.XPATH, '//*[@id="comment_tags_div"]/div[2]/span')
+        comment_tag_list = []
+        for i in comment_tag:
+            info = i.find_element(By.XPATH, 'a').text
+            comment_tag_list.append(info)
+        book_info_list.append(comment_tag_list)
+    except Exception as e:
+        book_info_list.append("None")
     logger.info(year + "年" + url + "的图书信息解析完成...")
 
     # 写入到csv文件中

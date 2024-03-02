@@ -248,3 +248,33 @@ Stacktrace:
 2024-03-01 17:17:33,572 INFO  开始获取new_book_10_month_src.csv的图书信息数据...
 2024-03-01 17:17:33,573 INFO  读取./data/2023/new_book/new_book_10_month_src.csv文件中的数据...
 2024-03-01 17:17:36,577 INFO  文件./data/2023/new_book/new_book_10_month.csv已经存在，不需要创建文件
+2024-03-01 19:41:59,985 INFO  开始获取new_book_10_month_src.csv的图书信息数据...
+2024-03-01 19:42:00,086 INFO  读取./data/2023/new_book/new_book_10_month_src.csv文件中的数据...
+2024-03-01 19:42:03,157 INFO  文件./data/2023/new_book/new_book_10_month.csv已经存在，不需要创建文件
+2024-03-01 19:42:03,730 INFO  开始解析2023年http://product.dangdang.com/29623611.html的图书信息...
+2024-03-01 19:42:03,820 ERROR  Message: no such element: Unable to locate element: {"method":"xpath","selector":"//*[@id="product_info"]/div[1]/h1"}
+  (Session info: chrome=122.0.6261.95); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF7B346AD22+56930]
+	(No symbol) [0x00007FF7B33DF622]
+	(No symbol) [0x00007FF7B32942E5]
+	(No symbol) [0x00007FF7B32D98ED]
+	(No symbol) [0x00007FF7B32D9A2C]
+	(No symbol) [0x00007FF7B331A967]
+	(No symbol) [0x00007FF7B32FBCDF]
+	(No symbol) [0x00007FF7B33181E2]
+	(No symbol) [0x00007FF7B32FBA43]
+	(No symbol) [0x00007FF7B32CD438]
+	(No symbol) [0x00007FF7B32CE4D1]
+	GetHandleVerifier [0x00007FF7B37E6AAD+3709933]
+	GetHandleVerifier [0x00007FF7B383FFED+4075821]
+	GetHandleVerifier [0x00007FF7B383817F+4043455]
+	GetHandleVerifier [0x00007FF7B3509756+706710]
+	(No symbol) [0x00007FF7B33EB8FF]
+	(No symbol) [0x00007FF7B33E6AE4]
+	(No symbol) [0x00007FF7B33E6C3C]
+	(No symbol) [0x00007FF7B33D68F4]
+	BaseThreadInitThunk [0x00007FFF67447344+20]
+	RtlUserThreadStart [0x00007FFF676426B1+33]
+
+2024-03-01 19:42:03,820 INFO  解析数据失败，需要进行登录验证...

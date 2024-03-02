@@ -4,6 +4,7 @@ from utils.log import logger
 
 def start(file_path):
     filenames = get_files_in_directory(file_path)
+    print(filenames)
     for filename in filenames:
         if filename.endswith("_src.csv"):
             logger.info("开始获取" + filename + "的图书信息数据...")
@@ -13,4 +14,4 @@ def start(file_path):
 
 
 if __name__ == "__main__":
-    start("./data/2023/new_book")
+    start("./data/2020")
