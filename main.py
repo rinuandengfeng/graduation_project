@@ -14,4 +14,4 @@ def start(file_path):
 
 
 if __name__ == "__main__":
-    start("./data/2020")
+    start("./data/2023/new_book")

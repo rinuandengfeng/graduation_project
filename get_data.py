@@ -47,7 +47,7 @@ def read_csv(file_path):
                 time.sleep(3)
                 browser.close()
                 sys.exit(-1)
-    time.sleep(3)
+    # time.sleep(2)
     logger.info("读取" + file_path + "文件中的数据结束...")
 
 
@@ -82,7 +82,7 @@ def analysis_book_info(url, csv_name, list_num):
 
     # 读取csv文件的url
     browser.get(url)
-    time.sleep(7)
+    time.sleep(3)
 
     # 解析要获取的数据
     # 排行榜
@@ -92,7 +92,7 @@ def analysis_book_info(url, csv_name, list_num):
         book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
         # book_info_list.append(book_name.get_attribute("title"))
     except Exception as e:
-        time.sleep(30)
+        time.sleep(10)
     # 书名
     try:
         book_name = browser.find_element(By.XPATH, '//*[@id="product_info"]/div[1]/h1')
